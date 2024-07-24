@@ -51,6 +51,7 @@ Welcome to <b>Duckietown</b>!
       5. [Poor performance, low frame rate](#Poor-performance-low-frame-rate)
       6. [RL training doesn't converge](#RL-training-doesnt-converge)
       7. [Unknown encoder 'libx264' when using gym.wrappers.Monitor](#Unknown-encoder-libx264-when-using-gymwrappersMonitor)
+      8. [Error: cannot import name 'gluNewQuadric' from 'pyglet.gl'](#Error:-cannot-import-name-'gluNewQuadric'-from-'pyglet.gl')
 
 Thanks @na018 for contributing this!
 
@@ -339,3 +340,33 @@ conda install -c conda-forge ffmpeg
 ```
 
 Alternatively, screencasting programs such as [Kazam](https://launchpad.net/kazam) can be used to record the graphical output of a single window.
+
+### Error: cannot import name 'gluNewQuadric' from 'pyglet.gl'
+
+Create a virtual environment as advised in https://docs.duckietown.com/daffy/devmanual-software/intermediate/simulation/index.html
+
+```
+$ cd ~ && virtualenv dt-sim
+$ source dt-sim/bin/activate
+$ pip3 install duckietown-gym-daffy
+```
+
+cd into gym-duckietown and try running `./manual_control.py --env-name Duckietown-udem1-v0`. 
+If you run into the error below, 
+
+```
+ImportError: cannot import name 'gluNewQuadric' from 'pyglet.gl'
+```
+downgrade pyglet `pip3 install pyglet==1.5.11`.
+
+If your gym_duckietown/simulator.py uses numpy's deprecated function `tile_idx=self.np_random.randint(0,len(self.driveable_tiles))` in line 463, you may run into the error below. If so, make the needed changes by using `tile_idx=self.rng.integers(0,len(self.driveable_tiles))` instead. 
+For it to work, you will have to add `from numpy.random import default_rng` in line 9, and `self.rng=default_rng()` in line 183.
+
+```
+<pre>line 275, in se2_from_linear_angular
+    linear = np.array(linear, dtype=&apos;float64&apos;)
+ValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (2,) + inhomogeneous part.</pre>
+```
+
+
+
