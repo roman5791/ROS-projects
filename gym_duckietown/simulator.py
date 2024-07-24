@@ -6,6 +6,8 @@ from ctypes import POINTER
 from dataclasses import dataclass
 from typing import Tuple
 import geometry
+from numpy.random import default_rng
+
 
 @dataclass
 class DoneRewardInfo:
@@ -178,7 +180,9 @@ class Simulator(gym.Env):
         :param distortion: If true, distorts the image with fish-eye approximation
         :param randomize_maps_on_reset: If true, randomizes the map on reset (Slows down training)
         """
-        # first initialize the RNG
+        self.rng = default_rng()
+
+       # first initialize the RNG
         self.seed_value = seed
         self.seed(seed=self.seed_value)
 
@@ -460,7 +464,8 @@ class Simulator(gym.Env):
                 tile = self.start_tile
             else:
                 # Select a random drivable tile to start on
-                tile_idx = self.np_random.randint(0, len(self.drivable_tiles))
+                #tile_idx = self.np_random.randint(0, len(self.drivable_tiles))
+                tile_idx = self.rng.integers(0, len(self.drivable_tiles))
                 tile = self.drivable_tiles[tile_idx]
 
         # Keep trying to find a valid spawn position on this tile
